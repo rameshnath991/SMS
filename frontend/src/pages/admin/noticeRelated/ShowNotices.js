@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,6 +11,8 @@ import { deleteUser } from '../../../redux/userRelated/userHandle';
 import TableTemplate from '../../../components/TableTemplate';
 import { GreenButton } from '../../../components/buttonStyles';
 import SpeedDialTemplate from '../../../components/SpeedDialTemplate';
+import Popup from '../../../components/Popup';
+
 
 const ShowNotices = () => {
 
@@ -20,18 +22,23 @@ const ShowNotices = () => {
     const { currentUser } = useSelector(state => state.user)
 
     useEffect(() => {
+        
         dispatch(getAllNotices(currentUser._id, "Notice"));
     }, [currentUser._id, dispatch]);
 
     if (error) {
         console.log(error);
     }
+    const [showPopup, setShowPopup] = useState(false);
+    const [message, setMessage] = useState("");
 
     const deleteHandler = (deleteID, address) => {
         dispatch(deleteUser(deleteID, address))
             .then(() => {
                 dispatch(getAllNotices(currentUser._id, "Notice"));
             })
+            setMessage("Notice is successfully deleted.")
+            setShowPopup(true)
     }
 
     const noticeColumns = [
@@ -95,6 +102,8 @@ const ShowNotices = () => {
                     }
                 </>
             }
+            <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+
         </>
     );
 };
